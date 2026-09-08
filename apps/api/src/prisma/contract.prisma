@@ -1,21 +1,24 @@
 // use prisma-next
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String?
-  name      String?
-  posts     Post[]
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+model Category {
+  id        Int               @id @default(autoincrement())
+  slug String @unique
+  name String
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
-}
+model Product {
+  id        Int               @id @default(autoincrement())
+  slug String @unique
+  name String
+  description String
+  priceCents Int
+  imageUrl String
+  stock Int @default(0)
+  category    Category          @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
