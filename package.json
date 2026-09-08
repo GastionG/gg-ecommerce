@@ -15,6 +15,7 @@
     "node": ">=24"
   },
   "devDependencies": {
-    "prettier": "^3.9.6"
+    "prettier": "^3.9.6",
+    "prettier-plugin-prisma": "^5.0.0"
   }
 }
