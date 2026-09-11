@@ -16,7 +16,7 @@ export default function ProductsError({
         <button
           type="button"
           onClick={reset}
-          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
         >
           Try again
         </button>

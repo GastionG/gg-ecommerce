@@ -11,7 +11,7 @@ type ProductDetailProps = {
 export function ProductDetail({ product }: ProductDetailProps) {
   return (
     <article className="grid gap-10 lg:grid-cols-2">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-zinc-100 dark:bg-zinc-900">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-zinc-100">
         <ProductImage
           src={product.imageUrl}
           alt={product.name}
@@ -22,11 +22,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
       <div className="flex flex-col">
         <Link
           href={`/products?category=${product.category.slug}`}
-          className="text-sm font-medium uppercase tracking-wide text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300"
+          className="text-sm font-medium uppercase tracking-wide text-zinc-500 hover:text-zinc-800"
         >
           {product.category.name}
         </Link>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-zinc-900">
           {product.name}
         </h1>
         <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -36,7 +36,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
           />
           <StockBadge stock={product.stock} />
         </div>
-        <p className="mt-6 max-w-prose text-base leading-7 text-zinc-600 dark:text-zinc-400">
+        <p className="mt-6 max-w-prose text-base leading-7 text-zinc-600">
           {product.description}
         </p>
         {product.stock > 0 ? (

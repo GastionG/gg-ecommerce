@@ -11,21 +11,21 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-12">
-      <section className="rounded-3xl bg-zinc-900 px-6 py-14 text-white dark:bg-zinc-100 dark:text-zinc-900 sm:px-10">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">
+      <section className="rounded-3xl bg-zinc-900 px-6 py-14 text-white sm:px-10">
+        <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
           Catalog
         </p>
         <h1 className="mt-3 max-w-xl text-4xl font-semibold tracking-tight sm:text-5xl">
           Gear for the next session
         </h1>
-        <p className="mt-4 max-w-lg text-base text-zinc-300 dark:text-zinc-600">
+        <p className="mt-4 max-w-lg text-base text-zinc-300">
           Browse products by category, open a detail page, and see live stock
           and pricing from the API.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/products"
-            className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-zinc-900 dark:bg-zinc-900 dark:text-white"
+            className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-zinc-900"
           >
             View catalog
           </Link>
@@ -33,7 +33,7 @@ export default async function HomePage() {
             <Link
               key={category.slug}
               href={`/products?category=${category.slug}`}
-              className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/10 dark:border-zinc-900/20 dark:text-zinc-900 dark:hover:bg-zinc-900/5"
+              className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/10"
             >
               {category.name}
             </Link>
@@ -46,7 +46,7 @@ export default async function HomePage() {
           <h2 className="text-2xl font-semibold tracking-tight">Featured</h2>
           <Link
             href="/products"
-            className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            className="text-sm font-medium text-zinc-600 hover:text-zinc-900"
           >
             See all
           </Link>

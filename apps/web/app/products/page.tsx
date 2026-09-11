@@ -28,7 +28,7 @@ export default async function ProductsPage({
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Catalog</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">{countLabel}</p>
+        <p className="text-zinc-600">{countLabel}</p>
         <CategoryFilters categories={categories} activeSlug={category} />
       </header>
 
@@ -44,7 +44,7 @@ export default async function ProductsPage({
             category ? (
               <Link
                 href="/products"
-                className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+                className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
               >
                 View all
               </Link>

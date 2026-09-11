@@ -12,9 +12,9 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-lg"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
         <ProductImage
           src={product.imageUrl}
           alt={product.name}
@@ -28,12 +28,12 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
           {product.category.name}
         </p>
-        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 className="text-base font-semibold text-zinc-900">
           {product.name}
         </h2>
         <ProductPrice
           priceCents={product.priceCents}
-          className="mt-auto text-lg font-semibold tabular-nums text-zinc-900 dark:text-zinc-50"
+          className="mt-auto text-lg font-semibold tabular-nums text-zinc-900"
         />
       </div>
     </Link>

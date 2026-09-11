@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
+      <body className="flex min-h-full flex-col bg-zinc-50 font-sans text-zinc-900">
         <SiteHeader />
         <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-10 sm:px-6">
           {children}
