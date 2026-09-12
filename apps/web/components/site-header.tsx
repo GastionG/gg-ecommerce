@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { APP_NAME } from '@gg/shared';
+import { AuthNav } from '@/components/auth-nav';
 
 export function SiteHeader() {
   return (
@@ -18,6 +19,7 @@ export function SiteHeader() {
           <Link href="/products" className="hover:text-zinc-900">
             Catalog
           </Link>
+          <AuthNav />
         </nav>
       </div>
     </header>

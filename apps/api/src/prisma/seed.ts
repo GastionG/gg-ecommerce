@@ -1,4 +1,8 @@
+import * as bcrypt from 'bcrypt';
 import { db } from './db';
+
+const ADMIN_EMAIL = 'admin@gg.local';
+const ADMIN_PASSWORD = 'admin12345';
 
 const CATEGORIES = [
   { slug: 'keyboards', name: 'Keyboards' },
@@ -161,8 +165,22 @@ async function seed() {
     console.log(`Product ${saved.slug} (#${saved.id})`);
   }
 
+  const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
+  const admin = await db.orm.public.User.upsert({
+    create: {
+      email: ADMIN_EMAIL,
+      passwordHash,
+      role: 'ADMIN',
+    },
+    update: {
+      passwordHash,
+      role: 'ADMIN',
+    },
+  });
+  console.log(`Admin ${admin.email} (#${admin.id})`);
+
   console.log(
-    `Seeded ${CATEGORIES.length} categories and ${PRODUCTS.length} products.`,
+    `Seeded ${CATEGORIES.length} categories, ${PRODUCTS.length} products, and 1 admin.`,
   );
 }
 
