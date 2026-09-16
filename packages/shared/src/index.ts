@@ -27,6 +27,19 @@ export type AuthUser = {
   role: UserRole;
 };
 
+export type Cart = {
+  id: number;
+  items: CartItem[];
+  subtotalCents: number;
+}
+
+export type CartItem = {
+  id: number;
+  quantity: number;
+  lineTotalCents: number;
+  product: Product;
+};
+
 export const registerSchema = z.object({
   email: z.string().trim().email('Enter a valid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
@@ -37,8 +50,20 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+export const addCartItemSchema = z.object({
+  productId: z.number().int().positive(),
+  quantity: z.number().int().positive().default(1),
+});
+
+
+export const updateCartItemSchema = z.object({
+  cartItemId: z.number().int().positive(),
+  quantity: z.number().int().positive().default(1),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type AddCartItemInput = z.infer<typeof addCartItemSchema>;
 
 export function formatPrice(priceCents: number, currency = 'USD') {
   const amount = (Math.round(priceCents) / 100).toFixed(2);
