@@ -33,7 +33,7 @@ function toCategoryDto(category: { [key: string]: unknown }) {
   return { name, slug };
 }
 
-function toProductDto(row: {
+export function toProductDto(row: {
   id: number;
   name: string;
   slug: string;
