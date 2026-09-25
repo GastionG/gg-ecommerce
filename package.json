@@ -9,7 +9,8 @@
     "db:down": "docker compose down",
     "db:seed": "pnpm --filter api db:seed",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prisma:emit": "pnpm --filter api contract:emit"
   },
   "packageManager": "pnpm@10.15.0",
   "engines": {
