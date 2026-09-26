@@ -22,7 +22,8 @@
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
     "postinstall": "prisma skills sync || exit 0",
     "contract:emit": "prisma contract emit",
-    "db:seed": "tsx src/prisma/seed.ts"
+    "db:seed": "tsx src/prisma/seed.ts",
+    "db:init": "prisma db init"
   },
   "dependencies": {
     "@gg/shared": "workspace:*",

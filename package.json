@@ -8,6 +8,7 @@
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:seed": "pnpm --filter api db:seed",
+    "db:init": "pnpm --filter api db:init",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prisma:emit": "pnpm --filter api contract:emit"
