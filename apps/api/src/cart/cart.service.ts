@@ -1,39 +1,44 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { Cart } from '@gg/shared';
+import { Cart, CartItem } from '@gg/shared';
 import { AddCartItemDto } from './dto/add-cart-item.dto.js';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto.js';
 import { DefaultModelRow } from '@prisma/orm-postgres/orm-client';
 import { Contract } from '../prisma/contract.js';
+import { ResultType } from '@prisma/orm-postgres/components';
 
 @Injectable()
 export class CartService {
   constructor(private readonly prisma: PrismaService) { }
 
-  async getCart(userId: number) {
+  async getCartWithItems(userId: number) {
+    const row = await this.getOrCreateCart(userId);
+
+    const items = await this.prisma.client.orm.public.CartItem
+      .where({ cartId: row.id })
+      .include('product')
+      .all();
+
+    return { cart: row, items };
+  }
+
+  async getOrCreateCart(userId: number) {
     const row = await this.prisma.client.orm.public.Cart
       .where({ userId })
       .first();
 
     if (!row) {
-      throw new NotFoundException('Cart not found');
+      return await this.prisma.client.orm.public.Cart
+        .create({
+          userId,
+        })
     }
 
-    const items = await this.prisma.client.orm.public.CartItem
-      .where({ cartId: row?.id })
-      .include('product')
-      .all();
-
-
-    return toCartDto(row, items);
+    return row;
   }
 
   async addItem(userId: number, dto: AddCartItemDto) {
-    const cart = await this.getCart(userId);
-
-    if (!cart) {
-      throw new NotFoundException('Cart not found');
-    }
+    const cart = await this.getOrCreateCart(userId);
 
     const item = await this.prisma.client.orm.public.CartItem.create({
       cartId: cart.id,
@@ -41,34 +46,36 @@ export class CartService {
       quantity: dto.quantity,
     });
 
-    return toCartDto(cart, [...cart.items, item]);
+    return item;
   }
 
-  // updateItem(userId: number, itemId: number, dto: UpdateCartItemDto): Promise<Cart>
-  // removeItem(userId: number, itemId: number): Promise<Cart>
-}
+  async updateItem(userId: number, itemId: number, dto: UpdateCartItemDto) {
+    const cart = await this.getOrCreateCart(userId);
 
-function toCartDto(row: DefaultModelRow<Contract, "Cart", "public">, items: DefaultModelRow<Contract, "CartItem", "public">[]) {
+    const item = await this.prisma.client.orm.public.CartItem
+      .where({ id: itemId, cartId: cart.id });
 
-  if (typeof row.id !== 'number' || !Array.isArray(items)) {
-    throw new Error('Cart is missing id/items/subtotalCents');
+    if (!item) {
+      throw new NotFoundException('Item not found');
+    }
+
+    await item.update({
+      quantity: dto.quantity,
+    });
+
+    return item;
   }
 
-  const subtotalCents = items.reduce((acc, item) => acc + (item.product?.priceCents ?? 0) * (item.quantity ?? 0), 0);
+  async removeItem(userId: number, itemId: number) {
+    const cart = await this.getOrCreateCart(userId);
 
-  return {
-    id: row.id,
-    items: items.map(toCartItemDto),
-    subtotalCents,
-  };
-}
+    const item = await this.prisma.client.orm.public.CartItem
+      .where({ id: itemId, cartId: cart.id });
 
+    if (!item) {
+      throw new NotFoundException('Item not found');
+    }
 
-function toCartItemDto(item: { [key: string]: unknown }) {
-  const productId = item.productId;
-  const quantity = item.quantity;
-  if (typeof productId !== 'number' || typeof quantity !== 'number') {
-    throw new Error('Cart item is missing productId/quantity');
+    await item.delete();
   }
-  return { productId, quantity };
 }

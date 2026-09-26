@@ -11,7 +11,7 @@ export class CartController {
 
   @Get()
   getCart(@CurrentUser() user: AuthUser) {
-    return this.cartService.getCart(user.id);
+    return this.cartService.getCartWithItems(user.id);
   }
 
   @Post('items')
@@ -19,13 +19,13 @@ export class CartController {
     return this.cartService.addItem(user.id, dto);
   }
 
-  // @Patch('items/:id')
-  // updateItem(@CurrentUser() user: AuthUser, @Param('id') id: string, @Body() dto: UpdateCartItemDto) {
-  //   return this.cartService.updateItem(user.id, Number(id), dto);
-  // }
+  @Patch('items/:id')
+  updateItem(@CurrentUser() user: AuthUser, @Param('id') id: string, @Body() dto: UpdateCartItemDto) {
+    return this.cartService.updateItem(user.id, Number(id), dto);
+  }
 
-  // @Delete('items/:id')
-  // removeItem(@CurrentUser() user: AuthUser, @Param('id') id: string) {
-  //   return this.cartService.removeItem(user.id, Number(id));
-  // }
+  @Delete('items/:id')
+  removeItem(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.cartService.removeItem(user.id, Number(id));
+  }
 }
