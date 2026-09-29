@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/commo
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { AddCartItemDto } from './dto/add-cart-item.dto.js';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto.js';
-import type { AuthUser } from '@gg/shared';
+import type { AuthUser, Cart, CartItem } from '@gg/shared';
 import { CartService } from './cart.service.js';
 
 @Controller('cart')
@@ -10,22 +10,22 @@ export class CartController {
   constructor(private readonly cartService: CartService) { }
 
   @Get()
-  getCart(@CurrentUser() user: AuthUser) {
+  getCart(@CurrentUser() user: AuthUser): Promise<Cart> {
     return this.cartService.getCartWithItems(user.id);
   }
 
   @Post('items')
-  addItem(@CurrentUser() user: AuthUser, @Body() dto: AddCartItemDto) {
+  addItem(@CurrentUser() user: AuthUser, @Body() dto: AddCartItemDto): Promise<CartItem> {
     return this.cartService.addItem(user.id, dto);
   }
 
   @Patch('items/:id')
-  updateItem(@CurrentUser() user: AuthUser, @Param('id') id: string, @Body() dto: UpdateCartItemDto) {
+  updateItem(@CurrentUser() user: AuthUser, @Param('id') id: string, @Body() dto: UpdateCartItemDto): Promise<CartItem> {
     return this.cartService.updateItem(user.id, Number(id), dto);
   }
 
   @Delete('items/:id')
-  removeItem(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+  removeItem(@CurrentUser() user: AuthUser, @Param('id') id: string): Promise<void> {
     return this.cartService.removeItem(user.id, Number(id));
   }
 }
