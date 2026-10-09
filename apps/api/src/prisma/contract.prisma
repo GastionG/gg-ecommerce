@@ -45,6 +45,8 @@ model Cart {
   user      User                @relation(fields: [userId], references: [id])
   createdAt TimestamptzString   @default(now())
   updatedAt temporal.updatedAtString()
+
+  @@unique([userId])
 }
 
 model CartItem {
