@@ -540,22 +540,19 @@
                   }
                 }
               ],
-              "indexes": [
-                {
-                  "columns": [
-                    "userId"
-                  ],
-                  "name": "cart_userId_idx_a489d58a",
-                  "prefix": "cart_userId_idx",
-                  "unique": false
-                }
-              ],
+              "indexes": [],
               "primaryKey": {
                 "columns": [
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "userId"
+                  ]
+                }
+              ]
             },
             "cartItem": {
               "columns": {
@@ -909,7 +906,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "b68b0440c937bca06f502f9d36c0dafb2e990ea99bdf468b84d70c5d306cf663"
+    "storageHash": "ea9d479a90d084cc43729377c12b95de559293bef68db33376a4207b4fa9ebca"
   },
   "execution": {
     "executionHash": "23d6249933809eefe741625d3925c2efd6c42729071beb7104194116a1cbf093",
