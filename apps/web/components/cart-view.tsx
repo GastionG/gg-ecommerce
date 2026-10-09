@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { formatPrice, type Cart } from '@gg/shared';
 import { EmptyState } from '@/components/empty-state';
@@ -12,17 +12,15 @@ export function CartView() {
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    try {
-      setCart(await getCart());
-    } catch {
-      setError('Could not load your cart. Try again.');
-    }
-  }, []);
+  function load() {
+    return getCart().then(setCart, () =>
+      setError('Could not load your cart. Try again.'),
+    );
+  }
 
   useEffect(() => {
     void load();
-  }, [load]);
+  }, []);
 
   async function mutate(itemId: number, action: () => Promise<unknown>) {
     setError(null);
