@@ -57,7 +57,6 @@ export const addCartItemSchema = z.object({
 
 
 export const updateCartItemSchema = z.object({
-  cartItemId: z.number().int().positive(),
   quantity: z.number().int().positive().default(1),
 });
 
