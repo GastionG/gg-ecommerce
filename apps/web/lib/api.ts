@@ -1,4 +1,13 @@
-import type { AuthUser, LoginInput, Product, RegisterInput } from '@gg/shared';
+import type {
+  AddCartItemInput,
+  AuthUser,
+  Cart,
+  CartItem,
+  LoginInput,
+  Product,
+  RegisterInput,
+  UpdateCartItemInput,
+} from '@gg/shared';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -34,10 +43,8 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   if (!res.ok) {
     throw new ApiError(res.status, await readErrorMessage(res));
   }
-  if (res.status === 204) {
-    return undefined as T;
-  }
-  return res.json() as Promise<T>;
+  const text = await res.text();
+  return (text ? JSON.parse(text) : undefined) as T;
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -51,22 +58,21 @@ export async function getProduct(slug: string): Promise<Product | null> {
   return res.json() as Promise<Product>;
 }
 
-export async function register(input: RegisterInput): Promise<AuthUser> {
-  return apiFetch<AuthUser>('/auth/register', {
-    method: 'POST',
+function jsonRequest(method: string, body: unknown): RequestInit {
+  return {
+    method,
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+    body: JSON.stringify(body),
+  };
+}
+
+export async function register(input: RegisterInput): Promise<AuthUser> {
+  return apiFetch<AuthUser>('/auth/register', jsonRequest('POST', input));
 }
 
 export async function login(input: LoginInput): Promise<AuthUser> {
-  return apiFetch<AuthUser>('/auth/login', {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
+  return apiFetch<AuthUser>('/auth/login', jsonRequest('POST', input));
 }
 
 export async function logout(): Promise<void> {
@@ -84,4 +90,26 @@ export async function getMe(): Promise<AuthUser | null> {
   if (res.status === 401) return null;
   if (!res.ok) throw new ApiError(res.status, await readErrorMessage(res));
   return res.json() as Promise<AuthUser>;
+}
+
+export async function getCart(): Promise<Cart> {
+  return apiFetch<Cart>('/cart', { credentials: 'include', cache: 'no-store' });
+}
+
+export async function addToCart(input: AddCartItemInput): Promise<CartItem> {
+  return apiFetch<CartItem>('/cart/items', jsonRequest('POST', input));
+}
+
+export async function updateCartItem(
+  id: number,
+  input: UpdateCartItemInput,
+): Promise<CartItem> {
+  return apiFetch<CartItem>(`/cart/items/${id}`, jsonRequest('PATCH', input));
+}
+
+export async function removeCartItem(id: number): Promise<void> {
+  await apiFetch<void>(`/cart/items/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
 }

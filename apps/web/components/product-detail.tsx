@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Product } from '@gg/shared';
+import { AddToCartButton } from './add-to-cart-button';
 import { ProductImage } from './product-image';
 import { ProductPrice } from './product-price';
 import { StockBadge } from './stock-badge';
@@ -42,6 +43,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
         {product.stock > 0 ? (
           <p className="mt-4 text-sm text-zinc-500">{product.stock} available</p>
         ) : null}
+        <AddToCartButton product={product} />
       </div>
     </article>
   );

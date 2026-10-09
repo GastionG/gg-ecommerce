@@ -40,6 +40,9 @@ export function AuthNav() {
           Admin
         </Link>
       ) : null}
+      <Link href="/cart" className="hover:text-zinc-900">
+        Cart
+      </Link>
       <Link href="/account" className="hover:text-zinc-900">
         {user.email}
       </Link>

@@ -63,6 +63,7 @@ export const updateCartItemSchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type AddCartItemInput = z.infer<typeof addCartItemSchema>;
+export type UpdateCartItemInput = z.infer<typeof updateCartItemSchema>;
 
 export function formatPrice(priceCents: number, currency = 'USD') {
   const amount = (Math.round(priceCents) / 100).toFixed(2);
