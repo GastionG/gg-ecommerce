@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prisma:emit": "pnpm --filter api contract:emit",
-    "prisma:init": "pnpm --filter api db:init"
+    "prisma:init": "pnpm --filter api db:init",
+    "stripe:listen": "stripe listen --events checkout.session.completed,checkout.session.expired --forward-to localhost:4000/webhooks/stripe"
   },
   "packageManager": "pnpm@10.15.0",
   "engines": {
