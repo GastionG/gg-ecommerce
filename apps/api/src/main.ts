@@ -8,7 +8,7 @@ import { AppModule } from './app.module.js';
 async function bootstrap() {
   log('Starting server...');
   log(APP_NAME);
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true });
   app.use(cookieParser());
   app.enableCors({
     origin: process.env.WEB_ORIGIN ?? 'http://localhost:3000',

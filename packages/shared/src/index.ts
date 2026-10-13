@@ -40,6 +40,10 @@ export type CartItem = {
   product: Product;
 };
 
+export type CheckoutSession = {
+  url: string;
+};
+
 export const registerSchema = z.object({
   email: z.string().trim().email('Enter a valid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
