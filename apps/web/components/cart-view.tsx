@@ -5,12 +5,19 @@ import Link from 'next/link';
 import { formatPrice, type Cart } from '@gg/shared';
 import { EmptyState } from '@/components/empty-state';
 import { ProductImage } from '@/components/product-image';
-import { ApiError, getCart, removeCartItem, updateCartItem } from '@/lib/api';
+import {
+  ApiError,
+  getCart,
+  removeCartItem,
+  startCheckout,
+  updateCartItem,
+} from '@/lib/api';
 
 export function CartView() {
   const [cart, setCart] = useState<Cart | null>(null);
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   function load() {
     return getCart().then(setCart, () =>
@@ -32,6 +39,19 @@ export function CartView() {
     } finally {
       await load();
       setPendingId(null);
+    }
+  }
+
+  async function checkout() {
+    setError(null);
+    setCheckingOut(true);
+    try {
+      const { url } = await startCheckout();
+      window.location.assign(url);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Could not start checkout. Try again.');
+      setCheckingOut(false);
+      await load();
     }
   }
 
@@ -141,6 +161,14 @@ export function CartView() {
           {formatPrice(cart.subtotalCents)}
         </span>
       </div>
+      <button
+        type="button"
+        onClick={() => void checkout()}
+        disabled={checkingOut || pendingId !== null}
+        className="self-end rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60"
+      >
+        {checkingOut ? 'Redirecting to Stripe…' : 'Checkout'}
+      </button>
     </div>
   );
 }

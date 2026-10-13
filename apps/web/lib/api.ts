@@ -3,6 +3,7 @@ import type {
   AuthUser,
   Cart,
   CartItem,
+  CheckoutSession,
   LoginInput,
   Product,
   RegisterInput,
@@ -105,6 +106,13 @@ export async function updateCartItem(
   input: UpdateCartItemInput,
 ): Promise<CartItem> {
   return apiFetch<CartItem>(`/cart/items/${id}`, jsonRequest('PATCH', input));
+}
+
+export async function startCheckout(): Promise<CheckoutSession> {
+  return apiFetch<CheckoutSession>('/checkout/session', {
+    method: 'POST',
+    credentials: 'include',
+  });
 }
 
 export async function removeCartItem(id: number): Promise<void> {
