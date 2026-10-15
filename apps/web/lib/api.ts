@@ -5,7 +5,11 @@ import type {
   CartItem,
   CheckoutSession,
   LoginInput,
+  AdminOrder,
+  Order,
   Product,
+  ProductPatchInput,
+  ProductWriteInput,
   RegisterInput,
   UpdateCartItemInput,
 } from '@gg/shared';
@@ -111,6 +115,36 @@ export async function updateCartItem(
 export async function startCheckout(): Promise<CheckoutSession> {
   return apiFetch<CheckoutSession>('/checkout/session', {
     method: 'POST',
+    credentials: 'include',
+  });
+}
+
+export async function getOrders(): Promise<Order[]> {
+  return apiFetch<Order[]>('/orders', { credentials: 'include', cache: 'no-store' });
+}
+
+export async function getOrder(id: number): Promise<Order> {
+  return apiFetch<Order>(`/orders/${id}`, { credentials: 'include', cache: 'no-store' });
+}
+
+export async function getAdminOrders(): Promise<AdminOrder[]> {
+  return apiFetch<AdminOrder[]>('/admin/orders', {
+    credentials: 'include',
+    cache: 'no-store',
+  });
+}
+
+export async function createProduct(input: ProductWriteInput): Promise<Product> {
+  return apiFetch<Product>('/admin/products', jsonRequest('POST', input));
+}
+
+export async function updateProduct(id: number, input: ProductPatchInput): Promise<Product> {
+  return apiFetch<Product>(`/admin/products/${id}`, jsonRequest('PATCH', input));
+}
+
+export async function deleteProduct(id: number): Promise<void> {
+  await apiFetch<void>(`/admin/products/${id}`, {
+    method: 'DELETE',
     credentials: 'include',
   });
 }
