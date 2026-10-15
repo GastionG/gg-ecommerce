@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { loginSchema } from '@gg/shared';
@@ -17,10 +17,13 @@ export function LoginForm() {
   const [pending, setPending] = useState(false);
 
   const next = searchParams.get('next') || '/account';
+  const destination = next.startsWith('/') ? next : '/account';
 
-  if (!loading && user) {
-    router.replace(next.startsWith('/') ? next : '/account');
-  }
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace(destination);
+    }
+  }, [destination, loading, router, user]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -36,7 +39,6 @@ export function LoginForm() {
     try {
       const authUser = await login(parsed.data);
       setUser(authUser);
-      router.push(next.startsWith('/') ? next : '/account');
     } catch (err) {
       if (err instanceof ApiError && (err.status === 401 || err.status === 400)) {
         setError(err.message);

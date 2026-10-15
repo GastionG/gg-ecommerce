@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { registerSchema } from '@gg/shared';
@@ -15,9 +15,11 @@ export function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  if (!loading && user) {
-    router.replace('/account');
-  }
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/account');
+    }
+  }, [loading, router, user]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,7 +35,6 @@ export function RegisterForm() {
     try {
       const authUser = await register(parsed.data);
       setUser(authUser);
-      router.push('/account');
     } catch (err) {
       if (err instanceof ApiError && (err.status === 409 || err.status === 400)) {
         setError(err.message);
