@@ -7,9 +7,18 @@ import { ProductsModule } from './products/products.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { CartModule } from './cart/cart.module.js';
 import { CheckoutModule } from './checkout/checkout.module.js';
+import { OrdersModule } from './orders/orders.module.js';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProductsModule, AdminModule, CartModule, CheckoutModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    ProductsModule,
+    OrdersModule,
+    AdminModule,
+    CartModule,
+    CheckoutModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
