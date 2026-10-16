@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { Cart, CartItem, Product } from '@gg/shared';
 import { AddCartItemDto } from './dto/add-cart-item.dto.js';
@@ -61,7 +61,7 @@ export class CartService {
   // oversell. Checkout has to re-check it inside a transaction.
   private assertStock(product: { name: string; stock: number }, quantity: number) {
     if (quantity > product.stock) {
-      throw new BadRequestException(
+      throw new ConflictException(
         `Only ${product.stock} left in stock for ${product.name}`,
       );
     }
