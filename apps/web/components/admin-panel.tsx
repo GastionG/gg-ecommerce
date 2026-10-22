@@ -15,6 +15,7 @@ import {
   getProducts,
   updateProduct,
 } from '@/lib/api';
+import Link from 'next/link.js';
 
 const fieldClass =
   'rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-900';
@@ -211,7 +212,9 @@ export function AdminPanel() {
                   className="flex flex-wrap items-center gap-3 px-5 py-4"
                 >
                   <div className="min-w-40 flex-1">
-                    <p className="font-medium">{product.name}</p>
+                    <Link href={`/products/${product.slug}`}>
+                      <p className="font-medium">{product.name}</p>
+                    </Link>
                     <p className="text-sm text-zinc-500">
                       {product.category.name} · stock {product.stock} ·{' '}
                       {formatPrice(product.priceCents)}
