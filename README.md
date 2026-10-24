@@ -1,6 +1,29 @@
 # gg-ecommerce
 
-A small gaming-gear store: keyboards, mice, and headsets. Next.js serves the pages. NestJS owns the catalog, cart, stock, orders, and Stripe. PostgreSQL stores the data.
+A gaming-gear store for a portfolio: keyboards, mice, and headsets, with a working catalog, cart, and Stripe Checkout.
+
+Next.js serves the storefront. NestJS owns the catalog, cart, stock, orders, and payments. PostgreSQL stores the data. Prices are integer cents.
+
+## What it shows
+
+- **Catalog.** Public product list with category filters, detail pages, and live stock from the API.
+- **Accounts.** Register and login with bcrypt password hashes. The session is an httpOnly, `SameSite=Lax` JWT cookie. Admin routes require the `ADMIN` role.
+- **Cart and orders.** Each user has one cart. After payment, the account page lists that user's orders.
+- **Admin.** Create, edit, and delete products, and list every order.
+- **Checkout and stock.** Starting checkout reserves stock inside a database transaction with compare-and-swap, then opens a Stripe Checkout session. The cart is cleared only after `checkout.session.completed`. If session creation fails or the session expires, the order becomes `FAILED` and the reserved stock returns.
+- **Shared contracts.** [`packages/shared`](packages/shared/src/index.ts) holds the TypeScript types, Zod schemas for login, register, and product forms, and `formatPrice`. The API checks incoming bodies with class-validator DTOs that follow the same rules.
+- **Tests.** Vitest covers cart, checkout, and orders. Playwright runs a browser purchase against Stripe's test card. GitHub Actions lints the API and the web app and runs the API unit tests.
+
+## Stack
+
+- pnpm workspace: `apps/web`, `apps/api`, `packages/shared`
+- Next.js 16, React 19, React Compiler, Tailwind CSS 4
+- NestJS 12, Passport JWT, class-validator
+- Prisma Next (`@prisma/orm-postgres` 8 RC) and PostgreSQL 16 in Docker
+- Stripe Checkout and signed webhooks
+- Zod, Vitest, Playwright, oxlint
+
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -12,7 +35,7 @@ flowchart LR
   Stripe -->|"webhook"| NestApi
 ```
 
-Money is integer cents. Stock is reserved when checkout starts and released if the Stripe session expires or session creation fails. The webhook, not the success page, marks an order paid.
+Stock is reserved when the Checkout session is created and released if that creation fails or the session expires. Payment is confirmed only by the `checkout.session.completed` webhook.
 
 ## Run it
 
@@ -22,7 +45,7 @@ Node 24 or newer, pnpm 10, and Docker.
 pnpm install
 ```
 
-Put the API variables from `.env.example` in `apps/api/.env`, and `NEXT_PUBLIC_API_URL` in `apps/web/.env.local`.
+Copy the API variables from `.env.example` into `apps/api/.env`, and put `NEXT_PUBLIC_API_URL` in `apps/web/.env.local`.
 
 ```bash
 pnpm db:up
@@ -43,7 +66,7 @@ The seed admin is `admin@gg.local` / `admin12345`.
 2. In another terminal, run `pnpm stripe:listen` and copy the `whsec_...` secret into `STRIPE_WEBHOOK_SECRET`. Restart the API after changing it.
 3. Log in, add a product, and open the cart.
 4. Checkout, then pay on Stripe with `4242 4242 4242 4242`, any future expiry, and any CVC.
-5. The browser lands on `/checkout/success`. The order becomes `PAID`, stock stays down, and the cart is cleared only after the `checkout.session.completed` webhook. If the session expires, the order becomes `FAILED` and the stock comes back.
+5. The browser lands on `/checkout/success`. The `checkout.session.completed` webhook marks the order `PAID`, keeps the reserved stock, and clears the cart. If the session expires, the order becomes `FAILED` and the stock comes back.
 
 ## Tests
 
@@ -54,4 +77,4 @@ pnpm test:e2e
 
 `pnpm test:e2e` is the browser purchase. It needs `pnpm dev`, a seeded database, and the Stripe test key. Install the browser once with `pnpm exec playwright install chromium`.
 
-GitHub Actions runs API lint, web lint, and the API unit tests on push.
+GitHub Actions runs API lint, web lint, and the API unit tests on every push and pull request.
