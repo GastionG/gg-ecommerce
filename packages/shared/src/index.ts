@@ -7,6 +7,31 @@ export type Category = {
   slug: string;
 };
 
+export const PRODUCT_OPTION_UIS = ['select', 'swatch'] as const;
+export type ProductOptionUi = (typeof PRODUCT_OPTION_UIS)[number];
+
+export type ProductOptionValue = {
+  key: string;
+  label: string;
+  hex?: string;
+};
+
+export type ProductOption = {
+  key: string;
+  label: string;
+  ui: ProductOptionUi;
+  values: ProductOptionValue[];
+};
+
+export type ProductVariant = {
+  id: number;
+  stock: number;
+  priceCents: number;
+  imageUrl: string;
+  sku?: string;
+  selections: Record<string, string>;
+};
+
 export type Product = {
   id: number;
   name: string;
@@ -16,6 +41,8 @@ export type Product = {
   imageUrl: string;
   stock: number;
   category: Category;
+  options: ProductOption[];
+  variants: ProductVariant[];
 };
 
 export const USER_ROLES = ['USER', 'ADMIN'] as const;
@@ -31,13 +58,14 @@ export type Cart = {
   id: number;
   items: CartItem[];
   subtotalCents: number;
-}
+};
 
 export type CartItem = {
   id: number;
   quantity: number;
   lineTotalCents: number;
   product: Product;
+  variant: ProductVariant;
 };
 
 export type CheckoutSession = {
@@ -79,9 +107,9 @@ export const loginSchema = z.object({
 
 export const addCartItemSchema = z.object({
   productId: z.number().int().positive(),
+  variantId: z.number().int().positive(),
   quantity: z.number().int().positive().default(1),
 });
-
 
 export const updateCartItemSchema = z.object({
   quantity: z.number().int().positive().default(1),
@@ -115,4 +143,53 @@ export function formatPrice(priceCents: number, currency = 'USD') {
   const amount = (Math.round(priceCents) / 100).toFixed(2);
   if (currency === 'USD') return `$${amount}`;
   return `${amount} ${currency}`;
+}
+
+export function findVariant(
+  product: Pick<Product, 'variants'>,
+  selections: Record<string, string>,
+): ProductVariant | undefined {
+  return product.variants.find((variant) => {
+    const keys = Object.keys(variant.selections);
+    if (keys.length !== Object.keys(selections).length) return false;
+    return keys.every((key) => variant.selections[key] === selections[key]);
+  });
+}
+
+export function variantLabel(
+  product: Pick<Product, 'options'>,
+  variant: Pick<ProductVariant, 'selections'>,
+): string {
+  return product.options
+    .map((option) => {
+      const key = variant.selections[option.key];
+      const value = option.values.find((entry) => entry.key === key);
+      return value ? `${option.label} ${value.label}` : null;
+    })
+    .filter((part): part is string => part !== null)
+    .join(', ');
+}
+
+export function lineName(
+  product: Pick<Product, 'name' | 'options'>,
+  variant: Pick<ProductVariant, 'selections'>,
+): string {
+  const suffix = variantLabel(product, variant);
+  return suffix ? `${product.name} — ${suffix}` : product.name;
+}
+
+export function optionValueAvailable(
+  product: Pick<Product, 'variants'>,
+  optionKey: string,
+  valueKey: string,
+  selections: Record<string, string>,
+): boolean {
+  const next = { ...selections, [optionKey]: valueKey };
+  return product.variants.some(
+    (variant) =>
+      variant.stock > 0 &&
+      Object.entries(next).every(
+        ([key, value]) => !value || variant.selections[key] === value,
+      ),
+  );
 }
