@@ -6,6 +6,12 @@ enum UserRole {
   ADMIN = "ADMIN"
 }
 
+enum ProductOptionUi {
+  @@type("pg/text@1")
+  select = "select"
+  swatch = "swatch"
+}
+
 model Category {
   id        Int                 @id @default(autoincrement())
   slug      String              @unique
@@ -24,8 +30,63 @@ model Product {
   stock       Int                 @default(0)
   category    Category            @relation(fields: [categoryId], references: [id])
   categoryId  Int
+  options     ProductOption[]
+  variants    ProductVariant[]
   createdAt   TimestamptzString   @default(now())
   updatedAt   temporal.updatedAtString()
+}
+
+model ProductOption {
+  id        Int                 @id @default(autoincrement())
+  productId Int
+  product   Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  key       String
+  label     String
+  ui        ProductOptionUi
+  sortOrder Int                 @default(0)
+  values    ProductOptionValue[]
+  createdAt TimestamptzString   @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@unique([productId, key])
+}
+
+model ProductOptionValue {
+  id        Int                 @id @default(autoincrement())
+  optionId  Int
+  option    ProductOption       @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  key       String
+  label     String
+  hex       String?
+  sortOrder Int                 @default(0)
+  createdAt TimestamptzString   @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@unique([optionId, key])
+}
+
+model ProductVariant {
+  id          Int                       @id @default(autoincrement())
+  productId   Int
+  product     Product                   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku         String?                   @unique
+  stock       Int                       @default(0)
+  priceCents  Int?
+  imageUrl    String?
+  selections  ProductVariantSelection[]
+  createdAt   TimestamptzString         @default(now())
+  updatedAt   temporal.updatedAtString()
+}
+
+model ProductVariantSelection {
+  variantId Int
+  variant   ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  optionId  Int
+  option    ProductOption      @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  valueId   Int
+  value     ProductOptionValue @relation(fields: [valueId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, optionId])
 }
 
 model User {
@@ -55,11 +116,13 @@ model CartItem {
   cart      Cart                @relation(fields: [cartId], references: [id])
   productId Int
   product   Product             @relation(fields: [productId], references: [id])
+  variantId Int
+  variant   ProductVariant      @relation(fields: [variantId], references: [id])
   quantity  Int
   createdAt TimestamptzString   @default(now())
   updatedAt temporal.updatedAtString()
 
-  @@unique([cartId, productId])
+  @@unique([cartId, variantId])
 }
 
 enum OrderStatus {
@@ -88,6 +151,8 @@ model OrderItem {
   order      Order               @relation(fields: [orderId], references: [id])
   productId  Int
   product    Product             @relation(fields: [productId], references: [id])
+  variantId  Int
+  variant    ProductVariant      @relation(fields: [variantId], references: [id])
   name       String
   priceCents Int
   quantity   Int
