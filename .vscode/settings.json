@@ -1,4 +1,5 @@
 {
   "prisma.pinToPrisma6": false,
-  "js/ts.preferences.importModuleSpecifierEnding": "js"
+  "js/ts.preferences.importModuleSpecifierEnding": "js",
+  "json.schemaDownload.enable": true
 }
